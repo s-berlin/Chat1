@@ -1,0 +1,467 @@
+//===== файл member.h =============
+#pragma once
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class member
+{
+public:
+    const string _login;
+    const string _password;
+//public:
+
+
+    member(const string& login, const string& password);
+    member(const string& login);
+    member() = default;
+
+    ~member() = default;
+    
+
+    void getMemberPassword(string pswd)
+    {
+        pswd = _password;
+    };
+    void getMemberLogin(string lgn)
+    {
+        lgn = _login;
+    };
+
+    void setMemberLogin(const string& lgn);
+    void setMemberPassword(const string& pswd);
+};
+
+//=== файл memper.cpp =======
+#include "member.h"
+#include "message.h"
+
+member::member(const string& login, const string& password) : _login(login), _password(password) {}
+member::member(const string& login) : _login(login) {}
+
+//============== файл membList.h ==================
+#include "member.h"
+#include <iostream>
+#include <string>
+#include <stdio.h>
+
+using namespace std;
+
+class membList
+{
+    short membQty = 0;          //реальное кол-во участников чата
+public:
+    member* Members[10];
+
+    //----------------------------- добавление участника
+    void addMember(member* mbr) 
+    {
+    //    const string lgn;
+    //    mbr->getMemberLogin(lgn);
+        Members[membQty] = mbr;
+        membQty++;
+    }
+
+    //---------------- Поиск участника по логину и паролю --------
+    int find_login(const string log, const string pswd)
+    {
+        for (int i = 0; i < membQty; i++)
+        {
+            member* mbr = Members[i];
+            
+            if (log == mbr->_login) // проверка логина
+            {
+                if (pswd == mbr->_password) return i + 1; // проверка пароля
+                else return -2;                           // неверный пароль
+            };
+        }
+        return -1;                                        // не найден логин
+    }
+    //------- Показать список участников --------
+    void showMembList()
+    {
+    //   const string lgn, pswd;
+        cout << "Список участников" << endl;
+        for (int i = 0; i < membQty; i++)
+        {
+            member* mbr = Members[i];
+
+            cout <<  "     lgn = " << mbr->_login << "     pswd = " << mbr->_password << endl;
+        }
+    }
+    
+    int getMembQty()
+    {
+        return membQty;
+    }
+
+    //------------------------ запись в файл списка участников
+     void writeMembList()     
+    {
+         char lgn[20], pswd[20];
+
+        FILE* f_usr;          // файл пользователей
+        setlocale(LC_ALL, "");
+       
+       f_usr = fopen("users.dat", "w");
+ //      cout << "Запись списка участников:" << endl;
+
+        for (int i = 0; i < membQty; i++)
+        {
+            member* mbr = Members[i];
+
+ //           cout << mbr->_login << " (" << mbr->_login.length() << ") " <<"      " << mbr->_password << endl;
+            
+            strcpy(lgn, mbr->_login.c_str());
+            strcpy(pswd, mbr->_password.c_str());
+        
+
+             fprintf(f_usr, "%s %s\n", lgn, pswd); 
+        }
+        fclose(f_usr);
+    }
+
+};
+
+//===== файл message.h =============
+#pragma once
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class message
+{
+public:
+    const string _msg;    // текст сообщения
+    const string _from;   // от кого
+    const string _to;     // кому
+    int _numb;            // порядковый номер сообщения
+
+    message(const string& from, const string& to, const string& msg);
+    message(const string& from, const string& to, const string& msg, int& numb);  
+
+    message() = default;
+
+    ~message() = default;
+};
+
+/*
+    void getMemberPassword(string pswd)
+    {
+        pswd = _password;
+    };
+    void getMemberLogin(string lgn)
+    {
+        lgn = _login;
+    };
+
+    void setMemberLogin(const string& lgn);
+    void setMemberPassword(const string& pswd);
+};
+*/
+
+//============== файл message.cpp ==================
+#include "message.h"
+message::message(const string& from, const string& to, const string& msg) : _from(from), _to(to), _msg(msg) {}
+message::message(const string& from, const string& to, const string& msg, int& numb) : _from(from), _to(to), _msg(msg), _numb(numb) {}
+
+//============== файл msgList.h ================
+#include "message.h"
+#include <iostream>
+#include <string>
+#include <stdio.h>
+#include <time.h>
+
+using namespace std;
+
+class msgList
+{
+    short msgQty = 0;          //реальное кол-во сообщений
+public:
+    message* Messages[100];
+
+    void addMessage(message* msg) //добавление сообщения 
+    {
+//        const string lgn;
+//        msg->getMemberLogin(lgn);
+        Messages[msgQty] = msg;
+        msgQty++;
+    }
+    void delMessage(int num_del, string to) //удаление заданного сообщения 
+    {
+        int i_del = -1;
+
+        for (int i = 0; i < msgQty; i++)
+        {
+            message* msg = Messages[i];
+            if (msg->_numb == num_del && msg->_to == to)
+            {
+                i_del = i;
+                break;
+            }
+        }
+        if (i_del != -1)
+        {
+            for (int i = i_del; i < msgQty - 1; i++) Messages[i] = Messages[i + 1];
+            msgQty--;
+        }      
+    }
+
+    //------- Поиск участника по логину и паролю --------
+    /*
+    int find_login(const string log, const string pswd)
+    {
+        for (int i = 0; i < membQty; i++)
+        {
+            member* mbr = Members[i];
+
+            if (log == mbr->_login) // проверка логина
+            {
+                if (pswd == mbr->_password) return i + 1; // проверка пароля
+                else return -2;                           // неверный пароль
+            };
+        }
+        return -1;                                        // не найден логин
+    }
+    */
+    //------- Показать список сообщений  --------
+    void showMsgList()
+    {
+
+        setlocale(LC_ALL, "");  //--- ?
+        cout << "Список сообщений:" << endl;
+
+        for (int i = 0; i < msgQty; i++)
+        {
+            message* msg = Messages[i];
+
+            cout << msg->_numb << "     От кого: " << msg->_from << "     Кому: " << msg->_to << "     Текст: " << msg->_msg << endl;
+        }
+    }
+    
+    //------- Показать список входящих сообщений  --------
+    void showMsgListTo(string to)
+    {
+        setlocale(LC_ALL, "");  //--- ?
+        cout << "Список входящих сообщений:" << endl;
+
+        for (int i = 0; i < msgQty; i++)
+        {
+            message* msg = Messages[i];
+
+            if( msg->_to == to || msg->_to == "all") cout << "   " << msg->_numb << "     От кого: " << msg->_from << "     Кому: " << msg->_to << "     Текст: " << msg->_msg << endl;
+        }
+    }
+
+
+  
+    void writeMsgList()
+    {
+        char from[20], to[20], msg[255];
+
+        FILE* f_msg;          // файл пользователей
+        setlocale(LC_ALL, "");
+
+        f_msg = fopen("msg.dat", "w");
+
+ //       cout << "Запись сообщений" << endl;
+
+        for (int i = 0; i < msgQty; i++)
+        {
+            message* mess = Messages[i];
+
+ //           cout << mess->_from << "   " << mess->_to << "   " << mess->_msg << endl;
+
+            strcpy(from, mess->_from.c_str());
+            strcpy(to, mess->_to.c_str());
+            strcpy(msg, mess->_msg.c_str());
+
+            fprintf(f_msg, "%s %s %s %d\n", from, to, msg, i + 1);
+        }
+        fclose(f_msg);
+    }
+
+};
+
+//============= файл main.cpp ======================
+//=====  Чат
+
+
+#include "member.h"
+#include "message.h"
+#include "membList.h"
+#include "msgList.h"
+#include "bad_range.h"
+#include <iostream>
+#include <fstream>
+#include <time.h>
+
+// using namespace std;
+
+
+int main()
+{
+	FILE* f_usr;          // файл пользователей
+	FILE* f_msg;          // файл сообщений 
+
+	string login, password;
+	string loginp;        // предыдущий логин (чтобы избежать повтора последней строки при чтении файла)
+	char lgn[20] = {}, pswd[20] = {};
+	string from = "sb", to = "as", msg = "Hy!";
+	char from_c[20] = {}, to_c[20] = {}, msg_c[255] = {};  // массивы для чтения файла 
+	int num = 0;
+	int act = 1; // код действия после входа  
+	long t_sec = 0;
+	int numb = 0;        // номер сообщения
+	int numbp = 0;       // предыдущий номер (чтобы избежать повтора последней строки при чтении файла)
+	int num_del = 0;     // номер удаляемого сообщения
+
+	setlocale(LC_ALL, "");
+
+	membList* mL = new membList();
+
+//===========================  загрузка списка пользователей из файла
+	f_usr = fopen("users.dat", "r");
+	while(!feof(f_usr))
+	{
+		fscanf(f_usr, "%s %s", &lgn, &pswd);
+		
+		login = lgn;
+		if (login != loginp)
+		{
+			password = pswd;
+			member* mbr = new member(login, password);
+			mL->addMember(mbr);
+			loginp = login;
+		}
+	}
+	fclose(f_usr);
+	mL->showMembList();
+
+	msgList* msLst = new msgList();
+	//===========================  загрузка сообщений из файла
+	f_msg = fopen("msg.dat", "r");
+	while (!feof(f_msg))
+	{
+		fscanf(f_msg, "%s %s %s %d", &from_c, &to_c, &msg_c, &numb);
+			
+		if (numb != numbp)
+		{
+			from = from_c;
+			to = to_c;
+			msg = msg_c;
+
+			message* mess = new message(from, to, msg, numb);
+			msLst->addMessage(mess);
+			numbp = numb;
+		}		
+	}
+	fclose(f_msg);
+	msLst->showMsgList();
+
+	time_t now = time(0);
+	char* dt = ctime(&now);
+	cout << dt << endl;
+
+	int action = 1; // - код действия
+
+	while (action != 0)                              //= = = = = = = = = = = = =  меню входа
+	{
+		cout << "1 - вход\n2 - регистрация\n0 - завершение" << endl;
+		cout << "Выберите действие:"; cin >> action;
+	
+		switch (action)
+		{
+		case 1:                                       //- - - - - - - - - - - - - - вход   
+			cout << "Логин:"; cin >> login;
+			cout << " Пароль:"; cin >> password;
+			num = mL->find_login(login, password);
+			if (num == -1) cout << "Логин не найден" << endl; 
+			if (num == -2) cout << "Неверный пароль" << endl;
+	//		cout << "num = " << num << endl;
+			if (num > 0)
+			{
+				int act = 1; // - код действия
+				string to_lgn = "sb", msg = "Hello";
+				setlocale(LC_ALL, "");
+
+//				msgList* msList = new msgList();
+
+				message* newMessage = new message(from, to_lgn, msg, numb);
+
+				while (act != 0)                                  //========= меню работы с сообщениями
+				{
+					cout << "\n   1 - новое сообщение\n   2 - входящие сообщения\n   3 - удалить сообщение\n   0 - выход " << endl;
+					cout << "   Выберите действие:"; cin >> act;
+
+					switch (act)
+					{
+					case 1:                                       //------------------------- новое сообщение
+						from = login;
+						cout << "   Кому:"; cin >> to_lgn;
+						// нужна проверка на наличие вводимого логина
+						cout << "   Текст:"; cin >> msg;
+						if (msg.length() > 0)
+						{
+							numb++;
+							message* newMessage = new message(from, to_lgn, msg, numb);
+							msLst->addMessage(newMessage);
+						}
+						break;
+					case 2:                                       //------------------------- входящие сообщения
+						msLst->showMsgListTo(login);
+						break;
+
+					case 3:                                       //------------------------- удаление сообщения
+						cout << "   Введите номер удаляемого сообщения:"; cin >> num_del;
+						msLst->delMessage(num_del, login);
+						break;
+
+					case 0:                                       //------------------------ выход из работы с сообщениями
+						break;
+					}
+//					msLst->showMsgList();
+				}
+
+			}
+
+
+//			cout << "num = " << num << endl;
+			break;
+
+		case 2:                                           // - - - - - - - - - - - - - регистрация
+			cout << "Логин:"; cin >> login;
+			cout << " Пароль:"; cin >> password;
+			if (login == "all") cout << "Не используйте all" << endl;
+			else
+			{
+				num = mL->find_login(login, password);
+				cout << "num = " << num << endl;
+				if (num != -1) cout << "Логин уже существует" << endl;
+				else                                      //     добавление нового участника
+				{
+					member* newMember = new member(login, password);
+					mL->addMember(newMember);
+				}
+			}
+		
+			break;
+
+		case 0:
+			cout << "Завершение" << endl;                // - - - - - - - - - - - - - - выход         
+		}
+
+
+	}
+
+//	mL->showMembList();    // показать список участников
+
+	mL->writeMembList();       
+
+	msLst->writeMsgList();
+
+}
+
+
