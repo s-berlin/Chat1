@@ -139,7 +139,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="bad_range.h" />
     <ClInclude Include="msgList.h" />
     <ClInclude Include="message.h" />
     <ClInclude Include="membList.h" />

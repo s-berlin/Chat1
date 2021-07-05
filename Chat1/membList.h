@@ -10,7 +10,9 @@ class membList
 {
     short membQty = 0;          //реальное кол-во участников чата
 public:
-    member* Members[10];
+    member* Members[100]{nullptr};
+
+    ~membList();
 
     //----------------------------- добавление участника
     void addMember(member* mbr) 

@@ -11,7 +11,9 @@ class msgList
 {
     short msgQty = 0;          //реальное кол-во сообщений
 public:
-    message* Messages[100];
+    message* Messages[1000]{nullptr};  //*** new
+
+    ~msgList();
 
     void addMessage(message* msg) //добавление сообщения 
     {

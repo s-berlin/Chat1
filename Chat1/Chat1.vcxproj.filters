@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bad_range.h">
-      <Filter>Исходные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="member.h">
       <Filter>Исходные файлы</Filter>
     </ClInclude>

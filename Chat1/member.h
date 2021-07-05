@@ -20,14 +20,16 @@ public:
     ~member() = default;
     
 
-    void getMemberPassword(string pswd)
+ //   void getMemberPassword(string pswd)
+     string getMemberPassword() const      //*** new
     {
-        pswd = _password;
-    };
-    void getMemberLogin(string lgn)
+        return _password;                  //*** new
+    }
+    //void getMemberLogin(string lgn)
+    string getMemberLogin() const          //*** new
     {
-        lgn = _login;
-    };
+        return _login;                     //*** new
+    }
 
     void setMemberLogin(const string& lgn);
     void setMemberPassword(const string& pswd);

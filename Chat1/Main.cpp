@@ -1,12 +1,9 @@
 //============= файл main.cpp ======================
 //=====  Чат
-
-
 #include "member.h"
 #include "message.h"
 #include "membList.h"
 #include "msgList.h"
-#include "bad_range.h"
 #include <iostream>
 #include <fstream>
 #include <time.h>
@@ -21,9 +18,18 @@ int main()
 
 	string login, password;
 	string loginp;        // предыдущий логин (чтобы избежать повтора последней строки при чтении файла)
-	char lgn[20] = {}, pswd[20] = {};
+	
+	const int MSG_SIZE = 255;													//*** new
+	const int LOGIN_MAX_LENGTH = 127;											//*** new
+	
+	char lgn[LOGIN_MAX_LENGTH] = {}, pswd[LOGIN_MAX_LENGTH] = {};               //*** new
 	string from = "sb", to = "as", msg = "Hy!";
-	char from_c[20] = {}, to_c[20] = {}, msg_c[255] = {};  // массивы для чтения файла 
+
+	//	char from_c[20] = {}, to_c[20] = {}, msg_c[255] = {};  // массивы для чтения файла 
+	
+
+	char from_c[LOGIN_MAX_LENGTH], to_c[LOGIN_MAX_LENGTH], msg_c[MSG_SIZE];		//*** new
+
 	int num = 0;
 	int act = 1; // код действия после входа  
 	long t_sec = 0;
@@ -39,13 +45,13 @@ int main()
 	f_usr = fopen("users.dat", "r");
 	while(!feof(f_usr))
 	{
-		fscanf(f_usr, "%s %s", &lgn, &pswd);
+		fscanf(f_usr, "%s %s", lgn, pswd);      //*** new  убрал &
 		
 		login = lgn;
 		if (login != loginp)
 		{
 			password = pswd;
-			member* mbr = new member(login, password);
+			member* mbr = new member(login, password);   
 			mL->addMember(mbr);
 			loginp = login;
 		}
@@ -54,11 +60,12 @@ int main()
 	mL->showMembList();
 
 	msgList* msLst = new msgList();
+
 	//===========================  загрузка сообщений из файла
 	f_msg = fopen("msg.dat", "r");
 	while (!feof(f_msg))
 	{
-		fscanf(f_msg, "%s %s %s %d", &from_c, &to_c, &msg_c, &numb);
+		fscanf(f_msg, "%s %s %s %d", from_c, to_c, msg_c, &numb);     //*** new  убрал &
 			
 		if (numb != numbp)
 		{
@@ -171,7 +178,7 @@ int main()
 
 //	mL->showMembList();    // показать список участников
 
-	mL->writeMembList();       
+	mL->writeMembList();      
 
 	msLst->writeMsgList();
 

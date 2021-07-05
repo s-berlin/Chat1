@@ -8,9 +8,9 @@ using namespace std;
 class message
 {
 public:
-    const string _msg;    // текст сообщения
-    const string _from;   // от кого
+    const string _from;   // от кого  //***  поменял порядок
     const string _to;     // кому
+    const string _msg;    // текст сообщения
     int _numb;            // порядковый номер сообщения
 
     message(const string& from, const string& to, const string& msg);
